@@ -1,6 +1,0 @@
-proxmox_api_host: "{{ ansible_host }}:8006"
-proxmox_api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-proxmox_api_password: "{{ lookup('env', 'PROXMOX_PASSWORD') }}"
-proxmox_node: pve
-proxmox_storage: local-lvm
-proxmox_bridge: vmbr0

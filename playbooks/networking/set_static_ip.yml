@@ -1,0 +1,55 @@
+---
+- name: Set static IP for VMs
+  hosts: vms
+  gather_facts: true
+  become: true
+  vars:
+    gateway: "192.168.2.1"
+    dns_servers:
+      - "8.8.8.8"
+      - "1.1.1.1"
+  tasks:
+    - name: Detect primary interface
+      set_fact:
+        primary_interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
+        current_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
+        cidr_prefix: "{{ ansible_facts['default_ipv4']['prefix'] }}"
+
+    - name: Display detected network info
+      debug:
+        msg: "Interface: {{ primary_interface }}, IP: {{ current_ip }}/{{ cidr_prefix }}, Gateway: {{ gateway }}"
+
+    - name: Find netplan config files
+      find:
+        paths: /etc/netplan
+        patterns: '*.yaml,*.yml'
+      register: netplan_files
+
+    - name: Backup current netplan configs
+      command: cp {{ item.path }} {{ item.path }}.backup
+      loop: "{{ netplan_files.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+      ignore_errors: true
+
+    - name: Generate netplan config
+      template:
+        src: netplan.yaml.j2
+        dest: /etc/netplan/00-static.yaml
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Remove old netplan configs
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ netplan_files.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+      when: item.path != '/etc/netplan/00-static.yaml'
+
+    - name: Apply netplan
+      command: netplan apply
+      async: 45
+      poll: 5

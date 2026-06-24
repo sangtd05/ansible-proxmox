@@ -2,13 +2,19 @@
 - name: List all VMs on Proxmox
   hosts: proxmox
   gather_facts: false
+  vars:
+    proxmox_api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+    proxmox_api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+    proxmox_api_password: "{{ lookup('env', 'PROXMOX_PASSWORD') }}"
+    proxmox_node: pve
   tasks:
     - name: Get all VMs
-      community.general.proxmox_vm_info:
+      community.proxmox.proxmox_vm_info:
         api_host: "{{ proxmox_api_host }}"
         api_user: "{{ proxmox_api_user }}"
         api_password: "{{ proxmox_api_password }}"
         node: "{{ proxmox_node }}"
+        validate_certs: false
       register: vm_info
       delegate_to: localhost
 

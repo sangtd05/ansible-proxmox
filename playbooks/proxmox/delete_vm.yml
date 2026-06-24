@@ -1,0 +1,32 @@
+---
+- name: Delete VM on Proxmox
+  hosts: proxmox
+  gather_facts: false
+  vars:
+    proxmox_api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+    proxmox_api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+    proxmox_api_password: "{{ lookup('env', 'PROXMOX_PASSWORD') }}"
+    proxmox_node: pve
+  tasks:
+    - name: Stop VM
+      community.proxmox.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        state: stopped
+        validate_certs: false
+      delegate_to: localhost
+      ignore_errors: true
+
+    - name: Delete VM
+      community.proxmox.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        state: absent
+        validate_certs: false
+      delegate_to: localhost

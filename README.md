@@ -1,6 +1,6 @@
 # Ansible Proxmox
 
-Quản lý hạ tầng Proxmox bằng Ansible chạy trong Docker.
+Quản lý hạ tầng Proxmox bằng Ansible chạy trong Docker/Podman.
 
 ## Setup
 
@@ -11,15 +11,34 @@ cp .env.example .env
 
 ## Sử dụng
 
-Tạo VM:
+Khởi động container (chỉ cần chạy 1 lần):
+
 ```bash
-docker compose run --rm ansible playbooks/create_vm.yml \
-  -e vm_id=100 -e vm_name=test-vm -e vm_memory=4096 -e vm_cores=2
+podman-compose up -d
 ```
 
-List VM:
+Exec vào container để chạy playbook:
+
 ```bash
-docker compose run --rm ansible playbooks/list_vms.yml
+# Tạo VM
+podman-compose exec ansible ansible-playbook playbooks/proxmox/create_vm.yml \
+  -e vm_id=101 -e vm_name=test-vm -e vm_memory=4096 -e vm_cores=2
+
+# Tạo VM với disk tùy chỉnh (đơn vị GB, không có chữ G)
+podman-compose exec ansible ansible-playbook playbooks/proxmox/create_vm.yml \
+  -e vm_id=102 -e vm_name=big-vm -e vm_memory=8192 -e vm_cores=4 -e vm_disk_size=50
+
+# List tất cả VM
+podman-compose exec ansible ansible-playbook playbooks/proxmox/list_vms.yml
+
+# Xóa VM
+podman-compose exec ansible ansible-playbook playbooks/proxmox/delete_vm.yml -e vm_id=101
+```
+
+Tắt container khi không dùng:
+
+```bash
+podman-compose down
 ```
 
 ## Cấu trúc
@@ -27,14 +46,39 @@ docker compose run --rm ansible playbooks/list_vms.yml
 ```
 .
 ├── docker-compose.yml
-├── Dockerfile
 ├── ansible.cfg
+├── .env.example
 ├── inventory/
 │   └── hosts.yml
 ├── playbooks/
-│   ├── create_vm.yml
-│   └── list_vms.yml
+│   ├── proxmox/
+│   │   ├── README.md
+│   │   ├── create_vm.yml
+│   │   ├── list_vms.yml
+│   │   └── delete_vm.yml
+│   └── networking/
+│       ├── README.md
+│       ├── set_static_ip.yml
+│       └── templates/
+│           └── netplan.yaml.j2
 ├── group_vars/
-│   └── proxmox.yml
 └── roles/
 ```
+
+## Tham số tạo VM
+
+Xem chi tiết tại [playbooks/proxmox/README.md](playbooks/proxmox/README.md)
+
+## Cấu hình mạng
+
+Set static IP cho các VM (giữ nguyên IP hiện tại, gateway 192.168.2.1, DNS 8.8.8.8/1.1.1.1):
+
+```bash
+# Tất cả VM
+podman-compose exec ansible ansible-playbook playbooks/networking/set_static_ip.yml
+
+# 1 VM cụ thể
+podman-compose exec ansible ansible-playbook playbooks/networking/set_static_ip.yml -l k8s-manager
+```
+
+Xem chi tiết tại [playbooks/networking/README.md](playbooks/networking/README.md)
