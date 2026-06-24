@@ -1,0 +1,29 @@
+---
+- name: Join worker node to Kubernetes cluster
+  hosts: k8s-worker
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Fetch join command from master
+      slurp:
+        src: /tmp/kubeadm-join-command.txt
+      delegate_to: k8s-manager
+      register: join_command_file
+
+    - name: Join cluster
+      command: "{{ join_command_file.content | b64decode }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf
+
+    - name: Verify node joined
+      command: kubectl get nodes
+      delegate_to: k8s-manager
+      become: false
+      environment:
+        KUBECONFIG: /home/heno/.kube/config
+      register: nodes
+      changed_when: false
+
+    - name: Display cluster nodes
+      debug:
+        msg: "{{ nodes.stdout_lines }}"
