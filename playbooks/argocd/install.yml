@@ -1,0 +1,49 @@
+---
+- name: Install ArgoCD
+  hosts: k8s-manager
+  gather_facts: true
+  become: true
+  vars:
+    argocd_namespace: argocd
+    argocd_version: "v2.9.3"
+  environment:
+    KUBECONFIG: /home/heno/.kube/config
+  tasks:
+    - name: Create ArgoCD namespace
+      become: false
+      command: kubectl create namespace {{ argocd_namespace }}
+      ignore_errors: true
+
+    - name: Install ArgoCD
+      become: false
+      command: kubectl apply -n {{ argocd_namespace }} -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml
+
+    - name: Wait for ArgoCD server to be ready
+      become: false
+      command: kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=180s
+
+    - name: Patch ArgoCD server to NodePort
+      become: false
+      shell: kubectl patch svc argocd-server -n {{ argocd_namespace }} --type merge -p '{"spec":{"type":"NodePort"}}'
+
+    - name: Get ArgoCD server NodePort
+      become: false
+      command: kubectl get svc argocd-server -n {{ argocd_namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+      register: argocd_nodeport
+      changed_when: false
+
+    - name: Get initial admin password
+      become: false
+      shell: kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+      register: argocd_admin_password
+      changed_when: false
+      ignore_errors: true
+
+    - name: Display ArgoCD access info
+      debug:
+        msg:
+          - "ArgoCD installed successfully"
+          - "UI: https://192.168.2.139:{{ argocd_nodeport.stdout }}"
+          - "Username: admin"
+          - "Password: {{ argocd_admin_password.stdout | default('Check with: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath={.data.password} | base64 -d') }}"
+          - "Note: Use HTTPS and accept self-signed certificate"
