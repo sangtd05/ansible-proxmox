@@ -35,6 +35,18 @@
       environment:
         KUBECONFIG: /home/heno/.kube/config
 
+    - name: Install metrics-server
+      become: false
+      command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+      environment:
+        KUBECONFIG: /home/heno/.kube/config
+
+    - name: Patch metrics-server with insecure TLS
+      become: false
+      command: kubectl patch deployment metrics-server -n kube-system --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+      environment:
+        KUBECONFIG: /home/heno/.kube/config
+
     - name: Generate join command
       command: kubeadm token create --print-join-command
       register: join_command
