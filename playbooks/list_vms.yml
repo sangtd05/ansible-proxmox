@@ -1,0 +1,17 @@
+---
+- name: List all VMs on Proxmox
+  hosts: proxmox
+  gather_facts: false
+  tasks:
+    - name: Get all VMs
+      community.general.proxmox_vm_info:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+      register: vm_info
+      delegate_to: localhost
+
+    - name: Display VMs
+      debug:
+        var: vm_info.proxmox_vms

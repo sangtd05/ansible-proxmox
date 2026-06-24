@@ -1,0 +1,12 @@
+services:
+  ansible:
+    build: .
+    volumes:
+      - ./ansible.cfg:/ansible/ansible.cfg:ro
+      - ./inventory:/ansible/inventory:ro
+      - ./playbooks:/ansible/playbooks:ro
+      - ./roles:/ansible/roles:ro
+      - ./group_vars:/ansible/group_vars:ro
+    env_file:
+      - .env
+    entrypoint: ["ansible-playbook"]

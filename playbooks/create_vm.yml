@@ -1,0 +1,35 @@
+---
+- name: Create VM on Proxmox
+  hosts: proxmox
+  gather_facts: false
+  tasks:
+    - name: Create VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        name: "{{ vm_name }}"
+        memory: "{{ vm_memory | default(2048) }}"
+        cores: "{{ vm_cores | default(2) }}"
+        sockets: 1
+        ostype: l26
+        net:
+          net0: "virtio,bridge={{ proxmox_bridge }}"
+        disks:
+          - type: virtio
+            storage: "{{ proxmox_storage }}"
+            size: "{{ vm_disk_size | default('20G') }}"
+        state: present
+      delegate_to: localhost
+
+    - name: Start VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_host }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ proxmox_node }}"
+        vmid: "{{ vm_id }}"
+        state: started
+      delegate_to: localhost
