@@ -56,11 +56,14 @@ podman-compose down
 │   │   ├── create_vm.yml
 │   │   ├── list_vms.yml
 │   │   └── delete_vm.yml
-│   └── networking/
+│   ├── networking/
+│   │   ├── README.md
+│   │   ├── set_static_ip.yml
+│   │   └── templates/
+│   │       └── netplan.yaml.j2
+│   └── docker/
 │       ├── README.md
-│       ├── set_static_ip.yml
-│       └── templates/
-│           └── netplan.yaml.j2
+│       └── install.yml
 ├── group_vars/
 └── roles/
 ```
