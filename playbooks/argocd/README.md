@@ -12,7 +12,7 @@ podman-compose exec ansible ansible-playbook playbooks/argocd/install.yml
 
 Sau khi cài đặt, ArgoCD sẽ expose qua NodePort:
 
-- **UI**: https://192.168.2.139:32136
+- **UI**: https://your-host:32136
 - **Username**: admin
 - **Password**: (hiển thị trong output của playbook)
 
@@ -30,7 +30,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 Sau khi cài đặt ArgoCD, anh có thể:
 
-1. **Truy cập UI**: Mở https://192.168.2.139:32136 và đăng nhập
+1. **Truy cập UI**: Mở https://your-host:32136 và đăng nhập
 2. **Add Git Repository**: Vào Settings → Repositories → Connect Repo
 3. **Tạo Application**: Tạo Application để sync từ Git repo
 4. **Cấu hình GitOps**: ArgoCD sẽ tự động sync và quản lý resources

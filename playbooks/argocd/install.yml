@@ -43,7 +43,7 @@
       debug:
         msg:
           - "ArgoCD installed successfully"
-          - "UI: https://192.168.2.139:{{ argocd_nodeport.stdout }}"
+          - "UI: https://your-host:{{ argocd_nodeport.stdout }}"
           - "Username: admin"
           - "Password: {{ argocd_admin_password.stdout | default('Check with: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath={.data.password} | base64 -d') }}"
           - "Note: Use HTTPS and accept self-signed certificate"

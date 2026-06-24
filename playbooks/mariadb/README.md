@@ -16,7 +16,7 @@ podman-compose exec ansible ansible-playbook playbooks/mariadb/deploy.yml \
 
 ## Thông tin kết nối
 
-- **Host**: 192.168.2.141:3306
+- **Host**: host:3306
 - **Root password**: mariadb123
 - **Database**: app_db
 - **User**: app_user
@@ -26,9 +26,9 @@ podman-compose exec ansible ansible-playbook playbooks/mariadb/deploy.yml \
 ## Kết nối từ xa
 
 ```bash
-mysql -h 192.168.2.141 -u app_user -p app_db
+mysql -h IP -u app_user -p app_db
 # hoặc root
-mysql -h 192.168.2.141 -u root -p
+mysql -h IP -u root -p
 ```
 
 ## Variables

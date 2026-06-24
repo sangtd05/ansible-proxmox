@@ -4,8 +4,8 @@ Setup Kubernetes cluster 1 master + 1 worker bằng kubeadm.
 
 ## Architecture
 
-- **Master**: k8s-manager (192.168.2.139)
-- **Worker**: k8s-worker (192.168.2.140)
+- **Master**: k8s-manager
+- **Worker**: k8s-worker
 - **Kubernetes version**: 1.31
 - **CNI**: Flannel
 - **Pod CIDR**: 10.244.0.0/16
@@ -28,7 +28,7 @@ podman-compose exec ansible ansible-playbook playbooks/k8s/join-worker.yml
 
 ```bash
 # SSH vào master
-ssh heno@192.168.2.139
+ssh user@host
 
 # Kiểm tra nodes
 kubectl get nodes

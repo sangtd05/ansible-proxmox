@@ -16,7 +16,7 @@ podman-compose exec ansible ansible-playbook playbooks/redis/deploy.yml \
 
 ## Thông tin kết nối
 
-- **Host**: 192.168.2.142:6379
+- **Host**: IP:6379
 - **Password**: redis123
 - **Max memory**: 1gb
 - **Data directory**: /opt/redis/data
@@ -26,10 +26,10 @@ podman-compose exec ansible ansible-playbook playbooks/redis/deploy.yml \
 
 ```bash
 # Redis CLI
-redis-cli -h 192.168.2.142 -p 6379 -a redis123
+redis-cli -h IP -p 6379 -a redis123
 
 # Hoặc dùng docker exec trên redis host
-ssh heno@192.168.2.142
+ssh user@IP
 docker exec -it redis redis-cli -a redis123
 ```
 

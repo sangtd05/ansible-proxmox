@@ -13,7 +13,7 @@ podman-compose exec ansible ansible-playbook playbooks/traefik/install.yml
 Sau khi cài đặt, Traefik sẽ expose qua NodePort:
 
 - **HTTP**: Port 31501 (có thể thay đổi)
-- **Dashboard**: http://192.168.2.139:31501/dashboard/
+- **Dashboard**: http://IP:31501/dashboard/
 
 ## Cấu hình
 

@@ -19,7 +19,7 @@ podman-compose exec ansible ansible-playbook playbooks/networking/set_static_ip.
 Playbook `set_static_ip.yml` sẽ:
 - Detect interface mạng chính động (không hardcode)
 - Giữ nguyên IP hiện tại của VM
-- Cấu hình gateway 192.168.2.1
+- Cấu hình gateway
 - Cấu hình DNS 8.8.8.8 và 1.1.1.1
 - Backup config cũ trước khi thay đổi
 - Apply netplan
@@ -28,5 +28,5 @@ Playbook `set_static_ip.yml` sẽ:
 
 | Biến | Giá trị | Mô tả |
 |------|---------|-------|
-| gateway | 192.168.2.1 | Default gateway |
+| gateway | your gateway | Default gateway |
 | dns_servers | 8.8.8.8, 1.1.1.1 | DNS servers |
