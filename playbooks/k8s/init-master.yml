@@ -90,3 +90,26 @@
         - name: Display k9s version
           debug:
             msg: "{{ k9s_version.stdout }}"
+
+    - name: Install Helm
+      block:
+        - name: Download Helm install script
+          get_url:
+            url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            dest: /tmp/get_helm.sh
+            mode: '0755'
+
+        - name: Install Helm
+          command: bash /tmp/get_helm.sh
+          environment:
+            DESIRED_VERSION: ""
+          register: helm_install
+
+        - name: Verify Helm installation
+          command: helm version
+          register: helm_version
+          changed_when: false
+
+        - name: Display Helm version
+          debug:
+            msg: "{{ helm_version.stdout }}"

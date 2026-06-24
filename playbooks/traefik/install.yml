@@ -1,0 +1,54 @@
+---
+- name: Install Traefik Ingress Controller
+  hosts: k8s-manager
+  gather_facts: true
+  become: true
+  vars:
+    traefik_namespace: traefik
+    traefik_release_name: traefik
+    traefik_chart_version: "28.0.0"
+  environment:
+    KUBECONFIG: /home/heno/.kube/config
+  tasks:
+    - name: Add Traefik Helm repo
+      become: false
+      command: helm repo add traefik https://traefik.github.io/charts
+      ignore_errors: true
+
+    - name: Update Helm repos
+      become: false
+      command: helm repo update
+
+    - name: Create Traefik namespace
+      become: false
+      command: kubectl create namespace {{ traefik_namespace }}
+      ignore_errors: true
+
+    - name: Install Traefik with Helm
+      become: false
+      command: >
+        helm upgrade --install {{ traefik_release_name }} traefik/traefik
+        --namespace {{ traefik_namespace }}
+        --version {{ traefik_chart_version }}
+        --set deployment.replicas=1
+        --set service.type=NodePort
+        --set ingressRoute.dashboard.enabled=true
+        --set providers.kubernetesIngress.publishedService.enabled=true
+        --wait
+
+    - name: Wait for Traefik to be ready
+      become: false
+      command: kubectl rollout status deployment/{{ traefik_release_name }} -n {{ traefik_namespace }} --timeout=120s
+
+    - name: Get Traefik NodePort
+      become: false
+      command: kubectl get svc {{ traefik_release_name }} -n {{ traefik_namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+      register: traefik_nodeport
+      changed_when: false
+
+    - name: Display Traefik access info
+      debug:
+        msg:
+          - "Traefik installed successfully"
+          - "HTTP NodePort: {{ traefik_nodeport.stdout }}"
+          - "Dashboard: http://{{ ansible_host }}:{{ traefik_nodeport.stdout }}/dashboard/"
