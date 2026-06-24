@@ -1,0 +1,94 @@
+---
+- name: Deploy Redis 7.4
+  hosts: redis
+  gather_facts: true
+  become: true
+  vars:
+    redis_password: "redis123"
+    redis_port: "6379"
+    redis_maxmemory: "1gb"
+    redis_data_dir: "/opt/redis/data"
+    redis_config_dir: "/opt/redis/conf"
+    redis_container_name: "redis"
+    redis_image: "redis:7.4"
+  tasks:
+    - name: Create data directory
+      file:
+        path: "{{ redis_data_dir }}"
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: '0755'
+
+    - name: Create config directory
+      file:
+        path: "{{ redis_config_dir }}"
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: '0755'
+
+    - name: Create Redis config file
+      copy:
+        dest: "{{ redis_config_dir }}/redis.conf"
+        content: |
+          # Redis configuration
+          bind 0.0.0.0
+          port 6379
+          requirepass {{ redis_password }}
+          maxmemory {{ redis_maxmemory }}
+          maxmemory-policy allkeys-lru
+          appendonly yes
+          appendfsync everysec
+          dir /data
+        owner: "999"
+        group: "999"
+        mode: '0644'
+
+    - name: Pull Redis image
+      community.docker.docker_image:
+        name: "{{ redis_image }}"
+        source: pull
+      become_user: heno
+
+    - name: Stop existing container if exists
+      community.docker.docker_container:
+        name: "{{ redis_container_name }}"
+        state: absent
+      ignore_errors: true
+
+    - name: Run Redis container
+      community.docker.docker_container:
+        name: "{{ redis_container_name }}"
+        image: "{{ redis_image }}"
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "{{ redis_port }}:6379"
+        volumes:
+          - "{{ redis_data_dir }}:/data"
+          - "{{ redis_config_dir }}/redis.conf:/usr/local/etc/redis/redis.conf:ro"
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+      become_user: heno
+
+    - name: Wait for Redis to be ready
+      wait_for:
+        port: "{{ redis_port }}"
+        delay: 3
+        timeout: 30
+
+    - name: Verify Redis is running
+      community.docker.docker_container_info:
+        name: "{{ redis_container_name }}"
+      register: container_info
+      become_user: heno
+
+    - name: Display Redis connection info
+      debug:
+        msg:
+          - "Redis 7.4 deployed successfully"
+          - "Host: {{ ansible_host }}:{{ redis_port }}"
+          - "Password: {{ redis_password }}"
+          - "Max memory: {{ redis_maxmemory }}"
+          - "Data directory: {{ redis_data_dir }}"
+          - "Config file: {{ redis_config_dir }}/redis.conf"
