@@ -1,0 +1,74 @@
+---
+- name: Deploy MariaDB 11.8
+  hosts: mariadb
+  gather_facts: true
+  become: true
+  vars:
+    mariadb_root_password: "mariadb123"
+    mariadb_database: "app_db"
+    mariadb_user: "app_user"
+    mariadb_password: "appuser123"
+    mariadb_port: "3306"
+    mariadb_data_dir: "/opt/mariadb/data"
+    mariadb_container_name: "mariadb"
+    mariadb_image: "mariadb:11.8"
+  tasks:
+    - name: Create data directory
+      file:
+        path: "{{ mariadb_data_dir }}"
+        state: directory
+        owner: "999"
+        group: "999"
+        mode: '0755'
+
+    - name: Pull MariaDB image
+      community.docker.docker_image:
+        name: "{{ mariadb_image }}"
+        source: pull
+      become_user: heno
+
+    - name: Stop existing container if exists
+      community.docker.docker_container:
+        name: "{{ mariadb_container_name }}"
+        state: absent
+      ignore_errors: true
+
+    - name: Run MariaDB container
+      community.docker.docker_container:
+        name: "{{ mariadb_container_name }}"
+        image: "{{ mariadb_image }}"
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "{{ mariadb_port }}:3306"
+        env:
+          MARIADB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+          MARIADB_DATABASE: "{{ mariadb_database }}"
+          MARIADB_USER: "{{ mariadb_user }}"
+          MARIADB_PASSWORD: "{{ mariadb_password }}"
+        volumes:
+          - "{{ mariadb_data_dir }}:/var/lib/mysql"
+      become_user: heno
+
+    - name: Wait for MariaDB to be ready
+      wait_for:
+        port: "{{ mariadb_port }}"
+        delay: 5
+        timeout: 60
+
+    - name: Verify MariaDB is running
+      community.docker.docker_container_info:
+        name: "{{ mariadb_container_name }}"
+      register: container_info
+      become_user: heno
+
+    - name: Display MariaDB connection info
+      debug:
+        msg:
+          - "MariaDB 11.8 deployed successfully"
+          - "Host: {{ ansible_host }}:{{ mariadb_port }}"
+          - "Root password: {{ mariadb_root_password }}"
+          - "Database: {{ mariadb_database }}"
+          - "User: {{ mariadb_user }}"
+          - "User password: {{ mariadb_password }}"
+          - "Data directory: {{ mariadb_data_dir }}"

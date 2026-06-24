@@ -61,9 +61,12 @@ podman-compose down
 │   │   ├── set_static_ip.yml
 │   │   └── templates/
 │   │       └── netplan.yaml.j2
-│   └── docker/
+│   ├── docker/
+│   │   ├── README.md
+│   │   └── install.yml
+│   └── mariadb/
 │       ├── README.md
-│       └── install.yml
+│       └── deploy.yml
 ├── group_vars/
 └── roles/
 ```
