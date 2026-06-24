@@ -48,3 +48,33 @@
     - name: Display join command
       debug:
         msg: "Worker join command: {{ join_command.stdout }}"
+
+    - name: Install k9s
+      block:
+        - name: Download k9s
+          get_url:
+            url: "https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
+            dest: /tmp/k9s.tar.gz
+            mode: '0644'
+
+        - name: Extract k9s
+          unarchive:
+            src: /tmp/k9s.tar.gz
+            dest: /tmp
+            remote_src: true
+
+        - name: Install k9s binary
+          copy:
+            src: /tmp/k9s
+            dest: /usr/local/bin/k9s
+            remote_src: true
+            mode: '0755'
+
+        - name: Verify k9s installation
+          command: k9s version
+          register: k9s_version
+          changed_when: false
+
+        - name: Display k9s version
+          debug:
+            msg: "{{ k9s_version.stdout }}"
