@@ -1,32 +1,32 @@
 # Networking Playbooks
 
-Các playbook cấu hình mạng cho VM.
+Network configuration playbooks for VMs.
 
 ## Commands
 
-### Set static IP cho VM
+### Set static IP
 
 ```bash
-# Set static IP cho tất cả VM trong group vms
+# Set static IP for all VMs in the vms group
 podman-compose exec ansible ansible-playbook playbooks/networking/set_static_ip.yml
 
-# Set static IP cho 1 VM cụ thể
+# Set static IP for a specific VM
 podman-compose exec ansible ansible-playbook playbooks/networking/set_static_ip.yml -l k8s-manager
 ```
 
-## Mô tả
+## Description
 
-Playbook `set_static_ip.yml` sẽ:
-- Detect interface mạng chính động (không hardcode)
-- Giữ nguyên IP hiện tại của VM
-- Cấu hình gateway
-- Cấu hình DNS 8.8.8.8 và 1.1.1.1
-- Backup config cũ trước khi thay đổi
+The `set_static_ip.yml` playbook will:
+- Auto-detect the primary network interface (no hardcoding)
+- Preserve the VM's current IP
+- Configure the gateway
+- Configure DNS (8.8.8.8 and 1.1.1.1)
+- Back up the existing config before making changes
 - Apply netplan
 
-## Tham số
+## Parameters
 
-| Biến | Giá trị | Mô tả |
-|------|---------|-------|
+| Variable | Default | Description |
+|----------|---------|-------------|
 | gateway | your gateway | Default gateway |
 | dns_servers | 8.8.8.8, 1.1.1.1 | DNS servers |

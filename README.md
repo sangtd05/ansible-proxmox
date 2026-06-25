@@ -1,37 +1,30 @@
 # Ansible Heno
 
-Quản lý hạ tầng Proxmox và các service bằng Ansible chạy trong podman-compose.
+Infrastructure automation for a Proxmox-based homelab. Ansible runs inside a Podman container (via podman-compose) and manages VMs over SSH.
 
 ## Setup
 
 ```bash
 cp .env.example .env
-# Sửa .env với thông tin Proxmox thực tế
+# Edit .env with actual Proxmox credentials
 podman-compose up -d
 ```
 
-## Sử dụng
+## Usage
 
-Exec vào container để chạy playbook:
+Exec into the container and run playbooks:
 
 ```bash
 podman-compose exec ansible ansible-playbook playbooks/<category>/<playbook>.yml
 ```
 
-Mỗi thư mục trong `playbooks/` có README riêng với hướng dẫn chi tiết.
+Each directory under `playbooks/` has its own README with detailed instructions.
 
-## Playbooks
+## GitOps
 
-- **proxmox/** - Quản lý VM trên Proxmox (tạo, xóa, list)
-- **networking/** - Cấu hình static IP cho VMs
-- **docker/** - Cài đặt Docker CE
-- **mariadb/** - Deploy MariaDB trên Docker
-- **redis/** - Deploy Redis trên Docker
-- **k8s/** - Setup Kubernetes cluster (kubeadm)
-- **traefik/** - Cài đặt Traefik Ingress Controller
-- **argocd/** - Cài đặt ArgoCD cho GitOps
+Kubernetes workloads (cert-manager, Traefik, metrics-server, Rancher) are managed via ArgoCD from a separate [gitops-heno](https://github.com/sangtd05/gitops) repository.
 
-## Cấu trúc
+## Structure
 
 ```
 .
@@ -41,12 +34,5 @@ Mỗi thư mục trong `playbooks/` có README riêng với hướng dẫn chi t
 ├── inventory/
 │   └── hosts.yml
 └── playbooks/
-    ├── proxmox/
-    ├── networking/
-    ├── docker/
-    ├── mariadb/
-    ├── redis/
-    ├── k8s/
-    ├── traefik/
-    └── argocd/
+    ├── ...
 ```

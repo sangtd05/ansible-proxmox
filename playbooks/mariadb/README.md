@@ -1,6 +1,6 @@
 # MariaDB 11.8 Deployment
 
-Deploy MariaDB 11.8 trên Docker.
+Deploy MariaDB 11.8 in Docker.
 
 ## Commands
 
@@ -8,13 +8,13 @@ Deploy MariaDB 11.8 trên Docker.
 # Deploy MariaDB
 podman-compose exec ansible ansible-playbook playbooks/mariadb/deploy.yml
 
-# Deploy với custom password
+# Deploy with custom passwords
 podman-compose exec ansible ansible-playbook playbooks/mariadb/deploy.yml \
   -e mariadb_root_password=custom_root_pass \
   -e mariadb_password=custom_user_pass
 ```
 
-## Thông tin kết nối
+## Connection info
 
 - **Host**: host:3306
 - **Root password**: mariadb123
@@ -23,11 +23,11 @@ podman-compose exec ansible ansible-playbook playbooks/mariadb/deploy.yml \
 - **User password**: appuser123
 - **Data directory**: /opt/mariadb/data
 
-## Kết nối từ xa
+## Remote connection
 
 ```bash
 mysql -h IP -u app_user -p app_db
-# hoặc root
+# or as root
 mysql -h IP -u root -p
 ```
 

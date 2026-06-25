@@ -1,45 +1,49 @@
 # Traefik Ingress Controller
 
-Cài đặt Traefik làm ingress controller cho Kubernetes cluster.
+Install Traefik as the ingress controller for the Kubernetes cluster.
 
-## Cài đặt
+## Install
 
 ```bash
 podman-compose exec ansible ansible-playbook playbooks/traefik/install.yml
 ```
 
-## Thông tin truy cập
+## Access
 
-Sau khi cài đặt, Traefik sẽ expose qua NodePort:
+After installation, Traefik is exposed via NodePort:
 
-- **HTTP**: Port 31501 (có thể thay đổi)
+- **HTTP**: Port 31501 (may vary)
 - **Dashboard**: http://IP:31501/dashboard/
 
-## Cấu hình
+## Configuration
 
-Playbook cài Traefik với các setting:
+The playbook installs Traefik with:
 - Replicas: 1
 - Service type: NodePort
 - Dashboard: enabled
-- Published service: enabled (cho Ingress)
+- Published service: enabled (for Ingress)
 
-## Quản lý
+## Management
 
-### Kiểm tra status
+### Check status
+
 ```bash
 kubectl get pods -n traefik
 kubectl get svc -n traefik
 ```
 
-### Xem logs
+### View logs
+
 ```bash
 kubectl logs -n traefik deployment/traefik
 ```
 
 ### Upgrade
-Chạy lại playbook, Helm sẽ upgrade release hiện tại.
+
+Re-run the playbook — Helm will upgrade the existing release.
 
 ### Uninstall
+
 ```bash
 helm uninstall traefik -n traefik
 kubectl delete namespace traefik
@@ -47,6 +51,6 @@ kubectl delete namespace traefik
 
 ## Notes
 
-- Traefik được cài bằng Helm chart version 28.0.0
-- Dashboard mặc định enabled, có thể disable bằng cách sửa values
-- NodePort có thể thay đổi mỗi lần reinstall, check lại bằng `kubectl get svc -n traefik`
+- Traefik is installed via Helm chart version 28.0.0
+- Dashboard is enabled by default — disable by editing values
+- NodePort may change on reinstall — check with `kubectl get svc -n traefik`

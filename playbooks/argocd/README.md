@@ -1,57 +1,53 @@
 # ArgoCD
 
-Cài đặt ArgoCD để quản lý GitOps cho Kubernetes cluster.
+Install ArgoCD for GitOps management of the Kubernetes cluster.
 
-## Cài đặt
+## Install
 
 ```bash
 podman-compose exec ansible ansible-playbook playbooks/argocd/install.yml
 ```
 
-## Thông tin truy cập
+## Access
 
-Sau khi cài đặt, ArgoCD sẽ expose qua NodePort:
+After installation, ArgoCD is exposed via NodePort:
 
 - **UI**: https://your-host:32136
 - **Username**: admin
-- **Password**: (hiển thị trong output của playbook)
+- **Password**: (shown in playbook output)
 
-**Lưu ý**: ArgoCD dùng self-signed certificate, cần chấp nhận khi truy cập lần đầu.
+**Note**: ArgoCD uses a self-signed certificate — accept it on first access.
 
-## Lấy lại password
-
-Nếu cần lấy lại password:
+## Retrieve password
 
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-## Các bước tiếp theo
+## Next steps
 
-Sau khi cài đặt ArgoCD, anh có thể:
-
-1. **Truy cập UI**: Mở https://your-host:32136 và đăng nhập
-2. **Add Git Repository**: Vào Settings → Repositories → Connect Repo
-3. **Tạo Application**: Tạo Application để sync từ Git repo
-4. **Cấu hình GitOps**: ArgoCD sẽ tự động sync và quản lý resources
+1. **Access UI**: Open https://your-host:32136 and log in
+2. **Add Git Repository**: Settings → Repositories → Connect Repo
+3. **Create Application**: Create an Application to sync from the Git repo
+4. **Configure GitOps**: ArgoCD will automatically sync and manage resources
 
 ## Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| argocd_namespace | argocd | Namespace cài đặt ArgoCD |
-| argocd_version | v2.9.3 | Version ArgoCD |
+| argocd_namespace | argocd | Namespace for ArgoCD |
+| argocd_version | v2.9.3 | ArgoCD version |
 
-## Quản lý
+## Management
 
-### Kiểm tra status
+### Check status
 
 ```bash
 kubectl get pods -n argocd
 kubectl get svc -n argocd
 ```
 
-### Xem logs
+### View logs
 
 ```bash
 kubectl logs -n argocd deployment/argocd-server
@@ -65,6 +61,6 @@ kubectl delete namespace argocd
 
 ## Notes
 
-- ArgoCD được cài từ manifest chính thức
-- Server được expose qua NodePort
-- Password được tạo tự động và lưu trong secret `argocd-initial-admin-secret`
+- ArgoCD is installed from the official manifest
+- Server is exposed via NodePort
+- Password is auto-generated and stored in secret `argocd-initial-admin-secret`

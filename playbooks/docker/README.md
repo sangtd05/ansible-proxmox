@@ -1,27 +1,27 @@
 # Docker Installation
 
-Cài đặt Docker CE trên các VM.
+Install Docker CE on target VMs.
 
 ## Commands
 
 ```bash
-# Cài Docker cho mariadb và redis
+# Install Docker on all docker_hosts (mariadb, redis)
 podman-compose exec ansible ansible-playbook playbooks/docker/install.yml
 
-# Cài Docker cho 1 host cụ thể
+# Install Docker on a specific host
 podman-compose exec ansible ansible-playbook playbooks/docker/install.yml -l mariadb
 ```
 
-## Mô tả
+## Description
 
-Playbook sẽ:
-- Gỡ Docker cũ nếu có (docker.io, docker-engine, etc.)
-- Cài đặt dependencies
-- Thêm Docker GPG key và repository chính thức
-- Cài Docker CE, CLI, containerd, buildx, compose plugin
+The playbook will:
+- Remove old Docker packages if present (docker.io, docker-engine, etc.)
+- Install dependencies
+- Add Docker GPG key and official repository
+- Install Docker CE, CLI, containerd, buildx, and compose plugin
 - Enable Docker service
-- Thêm user `heno` vào group `docker`
+- Add user `heno` to the `docker` group
 
 ## Target hosts
 
-Group `docker_hosts` trong inventory (hiện tại: mariadb, redis).
+Group `docker_hosts` in inventory (currently: mariadb, redis).

@@ -1,6 +1,6 @@
 # Kubernetes Cluster Setup
 
-Setup Kubernetes cluster 1 master + 1 worker bằng kubeadm.
+Bootstrap a Kubernetes cluster (1 master + 1 worker) using kubeadm.
 
 ## Architecture
 
@@ -14,32 +14,32 @@ Setup Kubernetes cluster 1 master + 1 worker bằng kubeadm.
 ## Commands
 
 ```bash
-# 1. Chuẩn bị tất cả nodes (tắt swap, cài kubeadm/kubelet/kubectl)
+# 1. Prepare all nodes (disable swap, install kubeadm/kubelet/kubectl)
 podman-compose exec ansible ansible-playbook playbooks/k8s/prepare.yml
 
-# 2. Khởi tạo master node
+# 2. Initialize the master node
 podman-compose exec ansible ansible-playbook playbooks/k8s/init-master.yml
 
-# 3. Join worker vào cluster
+# 3. Join the worker to the cluster
 podman-compose exec ansible ansible-playbook playbooks/k8s/join-worker.yml
 ```
 
 ## Verify
 
 ```bash
-# SSH vào master
+# SSH into master
 ssh user@host
 
-# Kiểm tra nodes
+# Check nodes
 kubectl get nodes
 
-# Kiểm tra pods
+# Check pods
 kubectl get pods -A
 ```
 
 ## Notes
 
-- Swap đã được tắt tự động
-- Kernel modules (overlay, br_netfilter) được load
-- Sysctl parameters được set cho networking
-- Kubeconfig được copy vào /home/heno/.kube/config
+- Swap is disabled automatically
+- Kernel modules (overlay, br_netfilter) are loaded
+- Sysctl parameters are set for networking
+- Kubeconfig is copied to /home/heno/.kube/config

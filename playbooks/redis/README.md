@@ -1,6 +1,6 @@
 # Redis 7.4 Deployment
 
-Deploy Redis 7.4 trên Docker.
+Deploy Redis 7.4 in Docker.
 
 ## Commands
 
@@ -8,13 +8,13 @@ Deploy Redis 7.4 trên Docker.
 # Deploy Redis
 podman-compose exec ansible ansible-playbook playbooks/redis/deploy.yml
 
-# Deploy với custom config
+# Deploy with custom config
 podman-compose exec ansible ansible-playbook playbooks/redis/deploy.yml \
   -e redis_password=custom_pass \
   -e redis_maxmemory=2gb
 ```
 
-## Thông tin kết nối
+## Connection info
 
 - **Host**: IP:6379
 - **Password**: redis123
@@ -22,24 +22,24 @@ podman-compose exec ansible ansible-playbook playbooks/redis/deploy.yml \
 - **Data directory**: /opt/redis/data
 - **Config file**: /opt/redis/conf/redis.conf
 
-## Kết nối từ xa
+## Remote connection
 
 ```bash
 # Redis CLI
 redis-cli -h IP -p 6379 -a redis123
 
-# Hoặc dùng docker exec trên redis host
+# Or via docker exec on the redis host
 ssh user@IP
 docker exec -it redis redis-cli -a redis123
 ```
 
-## Cấu hình
+## Configuration
 
-Redis được cấu hình với:
-- **bind**: 0.0.0.0 (cho phép kết nối từ xa)
+Redis is configured with:
+- **bind**: 0.0.0.0 (allow remote connections)
 - **requirepass**: redis123
 - **maxmemory**: 1gb
-- **maxmemory-policy**: allkeys-lru (evict khi đầy memory)
+- **maxmemory-policy**: allkeys-lru (evict when memory is full)
 - **appendonly**: yes (AOF persistence)
 - **appendfsync**: everysec
 
