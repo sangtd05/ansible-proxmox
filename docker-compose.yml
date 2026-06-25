@@ -1,6 +1,6 @@
 services:
   ansible:
-    image: python:3.12-slim
+    image: python:3.14-slim
     entrypoint: ["sh", "-c", "apt-get update -qq && apt-get install -y -qq sshpass > /dev/null 2>&1 && pip install --quiet ansible proxmoxer requests kubernetes && ansible-galaxy collection install community.proxmox kubernetes.core --force && sleep infinity"]
     volumes:
       - ./ansible.cfg:/ansible/ansible.cfg:ro
